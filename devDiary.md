@@ -36,3 +36,9 @@ As we now have a basic endpoint to call, we want to get some visibility int perf
 Therefore i add the basic endpoints of a counter so we can follow how much usage the endpoint have, and a histogram to show performance
 
 (see runtime/main.py)
+
+
+# Building tests
+As we now have a basic concept i need to write a test ensuring future changes does not deteriorate the work done so far.
+As we are building a docker container, the approach will be to run the container locally and then run a test in python.
+For the test i will use the entirety of the dataset, and run concurrent connections to simulate some load, and make sure i use data that resembles real world data.
