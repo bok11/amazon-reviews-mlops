@@ -30,3 +30,9 @@ Here i will keep it simple, and create a docker container with the ONNX model an
 I use FastAPI and uvicorn to build a python based inference machine.
 
 (see runtime/main.py)
+
+# Adding monitoring
+As we now have a basic endpoint to call, we want to get some visibility int performance and ensure we can measure if we meet our requirement of latency.
+Therefore i add the basic endpoints of a counter so we can follow how much usage the endpoint have, and a histogram to show performance
+
+(see runtime/main.py)
