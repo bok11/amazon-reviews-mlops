@@ -1,10 +1,52 @@
 import onnxruntime as rt
 import numpy as np
 from pydantic import BaseModel
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
+from prometheus_client import Counter, Histogram, generate_latest
+import time
 
 
 app = FastAPI()
+
+REQUEST_COUNTER = Counter(
+    "app_requests_total",  # Metric name
+    "Total number of requests to the app",  # Metric description
+    ["route", "status_code"],
+)
+
+REQUEST_LATENCY = Histogram(
+    "http_server_duration_seconds",
+    "End-to-end HTTP request latency",
+    ["route", "status_code"],
+    buckets=(
+        0.025,
+        0.05,
+        0.1,
+        0.2,
+        0.3,
+        0.5,
+        1.0,
+        2.5,
+        5.0,
+    ),  # we define buckets in seconds, with a higher resolution for lower latencies as our target is 300ms
+)
+
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    duration = time.time() - start_time
+    REQUEST_COUNTER.labels(request.url.path, str(response.status_code)).inc()
+    REQUEST_LATENCY.labels(request.url.path, str(response.status_code)).observe(
+        duration
+    )
+    return response
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type="text/plain")
 
 
 # we use a class to define the input data model
