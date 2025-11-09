@@ -12,3 +12,12 @@ I also identify the non-functional requirement:
 After getting an overview i open a jupyter notebook for my exploration phase.
 
 (see exploration.ipynb)
+
+# Build baseline model
+After seeing the data and making the split, I decide to use a simple linear regression model as my baseline. It will be quick to train and easy to implement in an inference engine.
+I will use review stars as my target, and use vectorize the text using TF-IDF. This is a simple way to get started, but lacks awareness of semantics and word relationships.
+It is a simple approach to assign value to each word based on frequency, and is ideal to use for a simple baseline we can beat in the future.
+
+My goal is to have a model that can take the words, and save it to an ONNX model for consumtion and to prepare seperate artefact tracks for the inference software and the model development in the future.
+
+(see train.py)
