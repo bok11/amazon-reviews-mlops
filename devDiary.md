@@ -42,3 +42,8 @@ Therefore i add the basic endpoints of a counter so we can follow how much usage
 As we now have a basic concept i need to write a test ensuring future changes does not deteriorate the work done so far.
 As we are building a docker container, the approach will be to run the container locally and then run a test in python.
 For the test i will use the entirety of the dataset, and run concurrent connections to simulate some load, and make sure i use data that resembles real world data.
+
+
+# Automation, guardrails, actions
+As i now have a complete project i want to spend the last time polishing and automating.
+For this, i will create a makefile that can be used in CI to check PR's, and i will create a pipline to push the container to GHCR
