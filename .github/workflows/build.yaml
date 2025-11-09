@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write    # needed to push to GHCR
+
+env:
+  PYTHON_VERSION: "3.13"
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/amazon-review-runtime
+  MODEL_PATH: output/model.onnx
+
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-
+
+      - name: Install training deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-train.txt
+
+      - name: Train and export ONNX
+        run: |
+          python train/train.py
+          test -f "${MODEL_PATH}" || (echo "Model not found at ${MODEL_PATH}" && exit 1)
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+
+      - name: Make test 
+        run: |
+          make test
+      
+      - name: Push to GHCR
+        run: |
+          docker tag amazon-review-runtime:latest ${{ env.IMAGE_NAME }}:latest
+          docker tag amazon-review-runtime:latest ${{ env.IMAGE_NAME }}:$(git rev-parse --short HEAD)
+          docker push ${{ env.IMAGE_NAME }}:latest 
+          docker push ${{ env.IMAGE_NAME }}:$(git rev-parse --short HEAD)
+
