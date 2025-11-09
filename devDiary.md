@@ -21,3 +21,12 @@ It is a simple approach to assign value to each word based on frequency, and is 
 My goal is to have a model that can take the words, and save it to an ONNX model for consumtion and to prepare seperate artefact tracks for the inference software and the model development in the future.
 
 (see train.py)
+
+
+# Building a basic runtime
+Now that i can succesfully train a model and save it, it is time to build an inference runtime.
+Here i will keep it simple, and create a docker container with the ONNX model and host it as a rest API.
+
+I use FastAPI and uvicorn to build a python based inference machine.
+
+(see runtime/main.py)
