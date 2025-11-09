@@ -43,7 +43,16 @@ As we now have a basic concept i need to write a test ensuring future changes do
 As we are building a docker container, the approach will be to run the container locally and then run a test in python.
 For the test i will use the entirety of the dataset, and run concurrent connections to simulate some load, and make sure i use data that resembles real world data.
 
+(see tests folder)
+
 
 # Automation, guardrails, actions
 As i now have a complete project i want to spend the last time polishing and automating.
 For this, i will create a makefile that can be used in CI to check PR's, and i will create a pipline to push the container to GHCR
+
+(see makefile and .github/workflows folder)
+
+# The final touch
+Now that the project is created, and the CI has been made all that is left is to create a small readme to make it easy to run the project.
+
+(see readme.md)
